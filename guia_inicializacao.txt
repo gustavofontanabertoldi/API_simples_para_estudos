@@ -1,0 +1,4 @@
+Para inicializar a aplicação basta colar o seguinte comando no terminal COM O .VENV ATIVADO:
+
+uvicorn main:app --reload
+
