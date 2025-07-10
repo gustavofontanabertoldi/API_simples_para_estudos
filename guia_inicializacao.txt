@@ -1,6 +1,6 @@
 Para inicializar a aplicação basta colar o seguinte comando no terminal COM O .VENV ATIVADO:
 
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 
 Quando abrir a aplicação na web, no navegador (ainda com os numeros do ip) digite:
 
