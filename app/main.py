@@ -4,11 +4,24 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from app.db.connection import engine, Base
 import asyncio
 
+from contextlib import asynccontextmanager
+
 # Importa o roteador principal do seu pacote 'router'
 from app.api.router.routes import router as main_router
 
+@asynccontextmanager
+async def lifespan(app:FastAPI):
+    #[Inicia]
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    
+    yield
+    
+    #[Fecha]
+    await engine.dispose()
+
 def create_app():
-    app = FastAPI()
+    app = FastAPI(lifespan=lifespan)
 
     '''
     configurações extras comentadas
@@ -25,18 +38,6 @@ def create_app():
     #     allow_methods=["*"],
     #     allow_headers=["*"],
     # )
-
-    @app.on_event("startup")
-    async def startup_event():
-        print('inicializing the aplication')
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-
-    @app.on_event("shutdown")
-    async def shutdown_event():
-        print("Desligando a aplicação...")
-        await engine.dispose() # Fecha a conexão com o banco de dados
-        print("Conexão com o banco de dados fechada.")
 
     app.include_router(main_router, prefix="/api/v1")
 
